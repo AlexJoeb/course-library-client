@@ -9,7 +9,6 @@ export class Provider extends Component {
     constructor() {
         super();
         this.data = new Data();
-    
         this.state = {
           authenticatedUser: Cookies.getJSON(`authenticatedUser`) || null,
         }

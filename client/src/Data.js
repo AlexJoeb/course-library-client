@@ -1,7 +1,7 @@
 import config from './config';
 
 export default class Data {
-  async api(path, method = 'GET', body = null, requiresAuth = false, credentials = null) {
+  api(path, method = 'GET', body = null, requiresAuth = false, credentials = null) {
     const url = config.apiBaseUrl + path;
 
     const options = {
@@ -20,13 +20,11 @@ export default class Data {
       options.headers['Authorization'] = `Basic ${encodedCredentials}`;
     }
 
-    const query = await fetch(url, options);
-
-    return query;
+    return fetch(url, options);
   }
 
-  async getCourses() {
-    const response = await this.api(`/courses`, `GET`);
+  getCourses() {
+    const response = this.api(`/courses`, `GET`);
     if (response.status === 200) {
       return response.json().then(data => data);
     } else if (response.status === 401) {
