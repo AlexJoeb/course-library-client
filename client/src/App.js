@@ -21,6 +21,8 @@ import Header from './components/Header';
 
 import { withContext } from './Context';
 
+const CoursesWithContext = withContext(Courses);
+const CourseDetailWithContext = withContext(CourseDetail);
 const UpdateCourseWithContext = withContext(UpdateCourse);
 
 export default class App extends Component {
@@ -34,10 +36,10 @@ export default class App extends Component {
         <Header />
         <Switch>
           {/* Routes */}
-          <Route exact path="/" component={Courses} />
+          <Route exact path="/" component={CoursesWithContext} />
           <Route path="/courses/create" component={CreateCourse} />
           <Route path="/courses/:id/update" component={UpdateCourseWithContext} />
-          <Route exact path="/courses/:id" component={CourseDetail} />
+          <Route exact path="/courses/:id" component={CourseDetailWithContext} />
           <Route path="/signin" component={SignIn} />
           <Route path="/signup" component={SignUp} />
           <Route path="/signout" component={SignOut} />

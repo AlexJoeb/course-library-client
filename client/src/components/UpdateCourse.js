@@ -20,9 +20,6 @@ export default class UpdateCourse extends Component {
     }
 
     componentDidMount(){
-        const { context } = this.props;
-
-        
     }
 
     handleChange(event){
@@ -54,13 +51,11 @@ export default class UpdateCourse extends Component {
 
     handleSubmit(event){
         event.preventDefault();
-
     }
 
     render() {
         // eslint-disable-next-line
         const { context } = this.props;
-        const courses = context.courses;
 
         return(
             <div className="bounds course--detail">

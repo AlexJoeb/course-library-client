@@ -1,10 +1,11 @@
 import React from 'react';
 
 const Course = (props) => {
+    const { course } = props;
     return (
-        <div className="grid-33"><a className="course--module course--link" href="course-detail.html">
+        <div className="grid-33"><a className="course--module course--link" href={`/courses/${course.id}`}>
             <h4 className="course--label">Course</h4>
-            <h3 className="course--title">INSERT COURSE NAME</h3>
+            <h3 className="course--title">{course.title}</h3>
         </a></div>
     );
 }

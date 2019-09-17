@@ -42,7 +42,7 @@ app.use(express.urlencoded({ extended: false }));
   const index = require('./routes');
   app.use('/', index);
 
-  // // API Routes
+  // API Routes
   const apiRoutes = require('./routes/api');
   app.use('/api', apiRoutes);
 

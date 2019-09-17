@@ -1,39 +1,34 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import Data from "./Data";
+import Cookies from 'js-cookie';
 
 const Context = React.createContext();
 
 export class Provider extends Component {
-
-    constructor(){
+    
+    constructor() {
         super();
-
+        this.data = new Data();
+    
         this.state = {
-          courses: null,
+          authenticatedUser: Cookies.getJSON(`authenticatedUser`) || null,
         }
     }
-
-    // Fetch the Course JSON Object from API.
-    componentDidMount() {
-      const apiRoute = `http://localhost:5000/api/`;
-      axios.get(apiRoute + `/courses`)
-        .then((resp) => {
-          console.log(resp.data);
-          if(resp.status === 200){
-            this.setState({
-              courses: resp.data,
-            })
-          }else throw new Error();
-        }).catch((err) => console.error(err));
-    }
-
-
     
     render() {
 
         // ! Stuff to be passed down the context
+        const {authenticatedUser} = this.state;
+
         const value = {
-            courses: this.state.courses,
+          authenticatedUser,
+          data: this.data,
+          actions: {
+            signIn: this.signIn,
+            signOut: this.signOut,
+            getCourses: this.data.getCourses,
+            createCourse: this.data.createCourse
+          }
         }
 
         return (
@@ -41,7 +36,27 @@ export class Provider extends Component {
               {this.props.children}
             </Context.Provider>
         );
-        
+    }
+
+    signIn = async (username, password) => {
+      const user = await this.data.getUser(username, password);
+      
+      if (user !== null) {
+        this.setState(() => {
+          return {
+            authenticatedUser: user,
+          };
+        });
+
+        Cookies.set(`authenticatedUser`, JSON.stringify(user), { expires: 1 });
+      }
+
+      return user;
+    }
+
+    signOut = () => {
+      this.setState({authenticatedUser: null});
+      Cookies.remove(`authenticatedUser`);
     }
 
 }
