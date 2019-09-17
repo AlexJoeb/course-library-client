@@ -23,8 +23,8 @@ export default class Data {
     return fetch(url, options);
   }
 
-  getCourses() {
-    const response = this.api(`/courses`, `GET`);
+  async getCourses() {
+    const response = await this.api(`/courses`, `GET`);
     if (response.status === 200) {
       return response.json().then(data => data);
     } else if (response.status === 401) {
