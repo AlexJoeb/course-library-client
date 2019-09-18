@@ -23,7 +23,7 @@ const authUser = async (req, res, next) => {
             where: {
                 emailAddress: credentials.name
             }
-        });
+        }).then((res) => console.log(res)).catch(err => console.log(err.message));
 
         if (user) {
 

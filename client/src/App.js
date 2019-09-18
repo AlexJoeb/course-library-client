@@ -6,6 +6,8 @@ import {
   Route,
   Switch
 } from 'react-router-dom';
+import Cookies from 'js-cookie';
+import ProtectedRoute from './ProtectedRoute';
 
 import './css/App.css';
 
@@ -23,26 +25,48 @@ import { withContext } from './Context';
 
 const CoursesWithContext = withContext(Courses);
 const CourseDetailWithContext = withContext(CourseDetail);
+const CreateCourseWithContext = withContext(CreateCourse);
 const UpdateCourseWithContext = withContext(UpdateCourse);
+const SignInWithContext = withContext(SignIn);
+const SignOutWithContext = withContext(SignOut);
+const SignUpWithContext = withContext(SignUp);
+const HeaderWithContext = withContext(Header);
+
 
 export default class App extends Component {
   
   state = {
+    username: '',
   };
+
+  componentDidMount(){
+    this.check();
+  }
+  
+  async check(){
+    const { authenticatedUser } = await Cookies.getJSON();
+    if(authenticatedUser !== null && authenticatedUser !== undefined){
+        const username = `${authenticatedUser.firstName} ${authenticatedUser.lastName}`;
+        this.setState({ 
+            username
+        });
+    }
+    this.forceUpdate();
+}
 
   render() {
     return (
       <Router>
-        <Header />
+        <HeaderWithContext username={this.state.username} />
         <Switch>
           {/* Routes */}
           <Route exact path="/" component={CoursesWithContext} />
-          <Route path="/courses/create" component={CreateCourse} />
-          <Route path="/courses/:id/update" component={UpdateCourseWithContext} />
+          <ProtectedRoute path="/courses/create" component={CreateCourseWithContext} />
+          <ProtectedRoute path="/courses/:id/update" component={UpdateCourseWithContext} />
           <Route exact path="/courses/:id" component={CourseDetailWithContext} />
-          <Route path="/signin" component={SignIn} />
-          <Route path="/signup" component={SignUp} />
-          <Route path="/signout" component={SignOut} />
+          <Route path="/signin" component={SignInWithContext} />
+          <Route path="/signup" component={SignUpWithContext} />
+          <Route path="/signout" component={SignOutWithContext} />
           <Route component={NotFound} />
           
         </Switch>

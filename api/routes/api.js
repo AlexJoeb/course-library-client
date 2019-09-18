@@ -46,8 +46,7 @@ router.post('/users', async (req, res, next) => {
         let password = await req.body.password;
 
         //* Email Validation with RegExp (RegExp created by Alexander Besse)
-        if (emailAddress 
-            && 
+        if (emailAddress &&
             (!((/^([A-Za-z0-9]+\.?([A-Za-z0-9]+)?)@(\w+\.?(\w+)?).(com|gov|edu|net|org)/i).test(emailAddress)))) {
             const err = new Error('Invalid email address (syntax error)');
             err.status = 400;
@@ -108,7 +107,7 @@ router.get("/courses", async (req, res, next) => {
         });
         res.status(200).json(courses);
     } catch (err) {
-        console.error('Internal Server Error (500) Occured => ', errors);
+        console.error('Internal Server Error (500) Occured => ', err);
         next(err);
     }
 
@@ -143,20 +142,24 @@ router.get("/courses/:id", async (req, res, next) => {
 
 // Send a POST course to /api/course that will create a new course, then redirect to '/api/courses/${new course id}' via locatiton. Returns: 201
 router.post('/courses', authUser, async (req, res, next) => {
-    try {
-        const userId = await req.body.userId,
-            description = await req.body.description,
-            title = await req.body.title,
-            estimatedTime = await req.body.estimatedTime,
-            materialsNeeded = await req.body.materialsNeeded;
+    const course = req.body;
+    const user   = req.currentUser;
+    
+    try{
+        const { 
+            userId,
+            title,
+            description,
+            estimatedTime,
+            materialsNeeded,
+        } = await req.body;
 
-        // create the new course
         const course = await Course.create({
             userId,
             title,
             description,
             estimatedTime,
-            materialsNeeded
+            materialsNeeded,
         });
 
         res.location(`/${course.id}`).status(201).end();
@@ -164,12 +167,11 @@ router.post('/courses', authUser, async (req, res, next) => {
         if (err.name === 'SequelizeValidationError') {
             const errors = err.errors.map((error) => `SequelizeValidationError Occured => ${err}`);
             err.status = 400;
-            console.error('Validation Error Occured => ', errors);
+            console.error('Validation Error Occured => ', err);
         }
-        console.error('Internal Server Error (500) Occured => ', errors);
+        console.error('Internal Server Error (500) Occured => ', err);
         next(err);
     }
-
 });
 
 // Send a PUT request to /api/courses/:id that will update the specified course. Returns: 204
@@ -184,7 +186,7 @@ router.put('/courses/:id', authUser, async (req, res, next) => {
 
             //? Checking if current user has a course to their user name.
             if (course.userId !== user.id) res.status(403).json({
-                message: `Error => Curren user doesn't have a course.`
+                message: `Error => This course doesn't belong to the current user.`,
             });
 
             else {

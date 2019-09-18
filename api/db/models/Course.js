@@ -89,26 +89,14 @@ module.exports = (sequelize) => {
             }
         },
 
-        userId: {
-            type: Sequelize.INTEGER,
-            allowNull: false,
-            validate: {
-                notNull: {
-                    msg: `No value was found for User ID.`
-                },
-                notEmpty: {
-                    msg: `No value was found for User ID.`
-                }
-            }
-        },
-
     }, {
         sequelize
     });
     Course.associate = (models) => {
         Course.hasOne(models.User, {
+            as: "user",
             foreignKey: {
-                fieldName: 'id',
+                fieldName: 'userId',
                 allowNull: false,
             },
         });

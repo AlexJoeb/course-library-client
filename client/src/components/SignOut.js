@@ -1,9 +1,10 @@
 import React from 'react';
+import { Redirect } from 'react-router-dom';
 
-const SignOut = (props) => {
+const SignOut = ({context}) => {
+    context.actions.signOut();
     return (
-        // TODO FINISH SIGN OUT PROT.
-        <h1>SignOut.js is not complete.</h1>
+        <Redirect to="/" />
     );
 }
 

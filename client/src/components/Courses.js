@@ -1,24 +1,33 @@
 import React, { Component } from 'react';
-// import Course from './Course';
+import Course from './Course';
 
 export default class Courses extends Component {
-
+    
     constructor(props){
         super();
-
-        const { context } = props;
-
+        
+        
         this.state = {
-            courses: context.actions.getCourses() || [],
+            courses: [],
         };
+    }
+    
+    componentDidMount= async () => {
+        const { context } = this.props;
+
+        await context.data.getCourses()
+        .then(courses => {
+            this.setState({courses});
+
+        });
     }
 
     render() {
-        console.log(this.state.courses);
+        const { courses } = this.state;
         return (
             <div className="bounds">
-                {/* { this.state.courses.map((course) => <Course key={course.id} course={course} />) } */}
-                <div className="grid-33">
+                { courses.map((course, index) => <Course key={index} course={course} />) }
+                <div key={99} className="grid-33">
                     <a className="course--module course--add--module" href="/courses/create">
                         <h3 className="course--add--title"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                             viewBox="0 0 13 13" className="add">
