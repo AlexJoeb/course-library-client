@@ -3,7 +3,7 @@ const express = require(`express`);
 const router  = express.Router();
 
 // * Import Validation
-const { check , validationReesult } = require(`express-validator`);
+const { check , validationResult } = require(`express-validator`);
 
 // * Import BCrypt For Password Checks
 const bcrypt = require(`bcryptjs`);
@@ -13,13 +13,14 @@ const { User } = require(`../models`);
 const authUser = require (`./authentication`);
 
 // ! Async Handler
+// * Passes a call back and returns an asynchronus middleware function.
 const asyncHandler = cb => {
     return async(req, res, next) => {
         try{ await cb(req,res,next); }catch(err) { next(err); }
     }
 }
 
-/* * Create User Routes * */
+// * Return the currently authenticated user.
 router.get(`/`, authUser, asyncHandler( async (req, res, next) => {
     const user = await req.currentUser;
     res.json({
@@ -34,28 +35,41 @@ router.get(`/`, authUser, asyncHandler( async (req, res, next) => {
 }));
 
 // ! Validation for null user fields.
-router.post(`/`, [
-    check('firstName').exists({checkNull: true, checkFalsy: true}).withMessage(`Please provide a first name.`),
+router.post(`/`, 
+    // * Using express-validator to validate the request object.
+    // * check([name]) will the following for .[name]:
+    // *    - req.body
+    // *    - req.cookies
+    // *    - req.headers
+    // *    - req.params
+    // *    - req.query
+    // * Express-Validator Documentation: https://express-validator.github.io/docs/index.html
+[
+    check('firstName').exists({ checkFalsy: true}).withMessage(`Please provide a first name.`),
     check('lastName').exists({checkNull: true, checkFalsy: true}).withMessage(`Please provide a last name.`),
-    check('emailAddress').exists({checkNull: true, checkFalsy: true}).withMessage(`Please provide an e-mail.`),
+    check('emailAddress').isEmail().exists({checkNull: true, checkFalsy: true}).withMessage(`Please provide an e-mail.`),
+    check('emailAddress').isEmail().exists({checkNull: true, checkFalsy: true}).withMessage(`Please provide an e-mail.`),
     check('password').exists({checkNull: true, checkFalsy: true}).withMessage(`Please provide a password.`),
 ], asyncHandler(async(req, res, next) => {
-    // * Check to see if there is any validation errors.
-    const errors = validationReesult(req);
 
+    // * Check to see if there is any validation errors.
+    const errors = validationResult(req);
+
+    // * See if there is any validation errors from the middleware above.
     if(!errors.isEmpty()){
         const messages = errors.array().map(error => error.msg);
         res.status(400).json({ errors: messages });
     }else{
         const user = req.body;
-
-        user.password = bcryptjs.hashSync(user.password);
-
+        
+        // * Encrpyt password before passing to database.
+        user.password = bcrypt.hashSync(user.password);
+        
         await User.create(user)
-            .then( user => {
-                res.location = `/`;
-                res.status(201).end();
-            });
+        .then( user => {
+            res.location = `/`;
+            res.status(201).end();
+        });
     }
 }));
 

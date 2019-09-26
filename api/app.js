@@ -13,31 +13,33 @@ const app = express();
 
 // * Enable Cors and Express JSON Passing
 app.use(cors());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // * Init Morgan for HTTP Request Logging
 app.use(morgan('dev'));
 
+// ! Routes
 app.use("/api/users", require("./routes/users"));
 app.use("/api/courses", require("./routes/courses"));
 app.use("/api/index", require("./routes/index"));
 app.use("/api/authentication", require("./routes/authentication"));
 
-// setup a friendly greeting for the root route
+//* Friendly Greeting for the `/` route.
 app.get('/', (req, res) => {
   res.json({
     message: 'Welcome to the REST API project!',
   });
 });
 
-// send 404 if no other route matched
+// * Send a 404 if no other route matches with URI
 app.use((req, res) => {
   res.status(404).json({
     message: 'Route Not Found',
   });
 });
 
-// setup a global error handler
+// * Global Error Handler
 app.use((err, req, res, next) => {
   if (enableGlobalErrorLogging) {
     console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
@@ -49,10 +51,10 @@ app.use((err, req, res, next) => {
   });
 });
 
-// set our port
+// * Set the PORT
 app.set('port', process.env.PORT || 5000);
 
-// start listening on our port
+// * Start listening on the PORT.
 const server = app.listen(app.get('port'), () => {
-  console.log(`Express server is listening on port ${server.address().port}`);
+  console.log(`Express server is started and listening on port ${server.address().port}`);
 });

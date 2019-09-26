@@ -1,57 +1,69 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import React, {
+  Component
+} from 'react';
+import {
+  Link
+} from 'react-router-dom';
 import Form from './Form';
 
 export default class UserSignUp extends Component {
-    constructor(){
-        super(); 
-        this.state = {
-            firstName:'',
-            lastName:'',
-            emailAddress:'',
-            password:'',
-            confirmPassword: '',
-            errors: [],
-        }
+  constructor() {
+    super();
+    this.state = {
+      firstName: '',
+      lastName: '',
+      emailAddress: '',
+      password: '',
+      confirmPassword: '',
+      errors: [],
     }
+  }
 
-    change = (event) => {
-      const name = event.target.name;
-      const value = event.target.value;
-  
+  change = (event) => {
+    const name = event.target.name;
+    const value = event.target.value;
+
+    this.setState(() => {
+      return {
+        [name]: value
+      };
+    });
+  }
+
+  submit = () => {
+    const {
+      context
+    } = this.props;
+
+    const {
+      firstName,
+      lastName,
+      emailAddress,
+      password,
+      confirmPassword
+    } = this.state;
+
+    const user = {
+      firstName,
+      lastName,
+      emailAddress,
+      password,
+    };
+
+    if (password !== confirmPassword) {
       this.setState(() => {
         return {
-          [name]: value
-        };
+          errors: ['Passwords must match']
+        }
       });
-    }
-
-    submit = () => {
-        const { context } = this.props;
-    
-        const {
-          firstName, 
-          lastName,
-          emailAddress,
-          password,
-          confirmPassword
-        } = this.state;
-    
-        const user = {
-          firstName,
-          lastName,
-          emailAddress,
-          password,
-        };
-
-      if (password !== confirmPassword) {
-          this.setState(() => {
-            return { errors: ['Passwords must match']}})
-      } else {
+    } else {
+      console.log(user);
       context.data.createUser(user)
-        .then( errors => {
+        .then(errors => {
           if (errors.length) {
-            this.setState({ errors });
+            this.setState({
+              errors
+            });
           } else {
             context.actions.signIn(emailAddress, password)
               .then(() => {
@@ -59,28 +71,28 @@ export default class UserSignUp extends Component {
               });
           }
         })
-        .catch( err => {
+        .catch(err => {
           console.log(err);
-          this.props.history.push('/error'); 
+          this.props.history.push('/error');
         });
-      }
     }
-  
-    cancel = () => {
-      this.props.history.push('/');
-    }
+  }
 
-    render() {
-        const {
-            firstName,
-            lastName,
-            emailAddress,
-            password,
-            confirmPassword,
-            errors
-        } = this.state
+  cancel = () => {
+    this.props.history.push('/');
+  }
 
-        return(
+  render() {
+      const {
+        firstName,
+        lastName,
+        emailAddress,
+        password,
+        confirmPassword,
+        errors
+      } = this.state
+
+      return (
             <div className="bounds">
                 <div className="grid-33 centered signin">
                     <h1>Sign Up</h1>
