@@ -47,8 +47,17 @@ router.post(`/`,
 [
     check('firstName').exists({ checkFalsy: true}).withMessage(`Please provide a first name.`),
     check('lastName').exists({checkNull: true, checkFalsy: true}).withMessage(`Please provide a last name.`),
-    check('emailAddress').isEmail().exists({checkNull: true, checkFalsy: true}).withMessage(`Please provide an e-mail.`),
-    check('emailAddress').isEmail().exists({checkNull: true, checkFalsy: true}).withMessage(`Please provide an e-mail.`),
+    check('emailAddress').isEmail().exists({checkNull: true, checkFalsy: true}).custom(value => {
+        return User.findOne({
+            where: {
+                emailAddress: value,
+            }
+        }).then(user => {
+            if(user){
+                return Promise.reject("This e-mail already exists.");
+            }
+        })
+    }).withMessage(`Please provide an e-mail.`),
     check('password').exists({checkNull: true, checkFalsy: true}).withMessage(`Please provide a password.`),
 ], asyncHandler(async(req, res, next) => {
 
@@ -57,7 +66,8 @@ router.post(`/`,
 
     // * See if there is any validation errors from the middleware above.
     if(!errors.isEmpty()){
-        const messages = errors.array().map(error => error.msg);
+        const msgs = errors.array().filter(error => error.msg !== "Invalid value");
+        const messages = msgs.map(error => error.msg);
         res.status(400).json({ errors: messages });
     }else{
         const user = req.body;
@@ -65,6 +75,7 @@ router.post(`/`,
         // * Encrpyt password before passing to database.
         user.password = bcrypt.hashSync(user.password);
         
+        // * Create User
         await User.create(user)
         .then( user => {
             res.location = `/`;

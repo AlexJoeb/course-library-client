@@ -49,17 +49,17 @@ export default class Data {
     async createUser(user) {
         // * Use API to POST the data on the passed user object.
         const response = await this.api('/users', 'POST', user);
-        if (response.status === 200) {
-            // * User successfully created.
+
+        if (response.status === 201) {
             return [];
-        } else if (response.status === 400) {
-            // * Bad response -> output the errors.
+        }
+        else if (response.status === 400) {
             return response.json().then(data => {
                 return data.errors;
             });
-        } else {
-            // * Something unknown happened..
-            throw new Error(`Something unknown happened..`);
+        }
+        else {
+            throw new Error();
         }
     }
 }

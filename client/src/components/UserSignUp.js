@@ -57,7 +57,6 @@ export default class UserSignUp extends Component {
         }
       });
     } else {
-      console.log(user);
       context.data.createUser(user)
         .then(errors => {
           if (errors.length) {
@@ -72,7 +71,6 @@ export default class UserSignUp extends Component {
           }
         })
         .catch(err => {
-          console.log(err);
           this.props.history.push('/error');
         });
     }
