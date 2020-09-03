@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 
 import axios from 'axios';
 
+import config from '../config';
+
 export default class CreateCourse extends Component {
 
     state = {
@@ -39,7 +41,7 @@ export default class CreateCourse extends Component {
                 errors: 'Either title or description was not provided.'
             });
         } else {
-        axios({ method: 'POST', url: `http://localhost:5000/api/courses`, 
+        axios({ method: 'POST', url: `${config.apiBaseURL}/courses`, 
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',
                 'Authorization': `Basic ${credentials}`

@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 
 import axios from 'axios';
 
+import Config from '../config';
+
 export default class UpdateCourse extends Component {
     constructor(props) {
         super(props);
@@ -44,7 +46,7 @@ export default class UpdateCourse extends Component {
         } else {
         axios ({
             method: 'PUT',
-            url: `http://localhost:5000/api/courses/${this.props.match.params.id}`,
+            url: `${Config.apiBaseURL}/courses/${this.props.match.params.id}`,
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',
                 'Authorization': `Basic ${credentials}`
@@ -77,7 +79,7 @@ export default class UpdateCourse extends Component {
         const {
             id
         } = this.props.match.params;
-        axios.get(`http://localhost:5000/api/courses/${id}`)
+        axios.get(`${Config.apiBaseURL}/courses/${id}`)
             .then(resp => {
                 const { course } = resp.data;
                 console.log(course.User);

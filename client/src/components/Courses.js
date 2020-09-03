@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 
 import axios from 'axios';
 
+import Config from '../config';
+
 export default class Courses extends Component {
     
     constructor(props){
@@ -13,7 +15,7 @@ export default class Courses extends Component {
     }
 
     componentDidMount() {
-        axios.get('http://localhost:5000/api/courses')
+        axios.get(`${Config.apiBaseURL}/courses`)
             .then(resp => {
                 this.setState({
                     courses: resp.data.courses

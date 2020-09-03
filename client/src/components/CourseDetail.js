@@ -23,7 +23,7 @@ export default class CourseDetail extends Component {
     }
 
     componentDidMount(){
-        axios.get(`http://localhost:5000/api/courses/${this.props.match.params.id}`)
+        axios.get(`${config.apiBaseURL}/courses/${this.props.match.params.id}`)
         .then(resp => {
             const { course } = resp.data;
             this.setState({
